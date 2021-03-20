@@ -21,7 +21,7 @@ function App() {
           </Col>
         </Row>
       </Layout.Header>
-      <Layout.Content style={{ padding: '50px' }}>
+      <Layout.Content style={{ padding: '50px 5%' }}>
         {auth.user ? <Bookmarks /> : <Home />}
       </Layout.Content>
     </Layout>
