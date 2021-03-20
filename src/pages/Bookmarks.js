@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Table,
   Tag,
@@ -38,22 +38,21 @@ export default function Bookmarks() {
 
   const getBookmarks = useCallback(
     debounce((params) => {
+      if (!loading) setLoading(true);
       return bookmarks.list(params).finally((response) => {
         setLoading(false);
         return response;
       });
-    }, 500),
+    }, 300),
     []
   );
 
   useEffect(() => {
     if (page !== 1) setPage(1);
-    if (!loading) setLoading(true);
     getBookmarks({ search, page: 1 });
   }, [search]);
 
   useEffect(() => {
-    if (!loading) setLoading(true);
     getBookmarks({ search, page });
   }, [page]);
 
@@ -61,7 +60,7 @@ export default function Bookmarks() {
     bookmarks.getTags();
   }, []);
 
-  const columns = [
+  const columns = useMemo(() => [
     {
       title: '',
       width: 40,
@@ -132,7 +131,7 @@ export default function Bookmarks() {
         </Space>
       ),
     },
-  ];
+  ]);
 
   return (
     <div>
