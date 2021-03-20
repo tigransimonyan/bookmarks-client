@@ -14,7 +14,7 @@ function App() {
       <Dropdown
         overlay={
           <Menu>
-            <Menu.Item>
+            <Menu.Item disabled>
               <Upload
                 name="bookmarks"
                 multiple={false}
