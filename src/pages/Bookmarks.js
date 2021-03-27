@@ -18,11 +18,13 @@ import {
   DeleteOutlined,
   QrcodeOutlined,
   EditOutlined,
+  PlusOutlined,
 } from '@ant-design/icons';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useBookmarks } from '../providers/ProvideBookmark';
 import { debounce } from '../helper';
 import EditBookmark from '../components/EditBookmark';
+import EditBookmarks from '../components/EditBookmarks';
 import RecordName from '../components/RecordName';
 import RecordFavorite from '../components/RecordFavorite';
 import QRCode from 'qrcode.react';
@@ -33,6 +35,8 @@ export default function Bookmarks() {
   const [record, setRecord] = useState(null);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [bulkEdit, setBulkEdit] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
   const [search, setSearch] = useState('');
   const bookmarks = useBookmarks();
 
@@ -87,7 +91,7 @@ export default function Bookmarks() {
       key: 'tags',
       dataIndex: 'tags',
       render: (list) =>
-        list.map((item) => (
+        list?.map((item) => (
           <Tag color="geekblue" key={item} onClick={() => setSearch(item)}>
             {item}
           </Tag>
@@ -123,7 +127,7 @@ export default function Bookmarks() {
             cancelText="No"
             destroyTooltipOnHide
             okButtonProps={{ danger: true }}
-            title="Are you sure to delete this bookmark?"
+            title="Are you sure you want to delete this bookmark?"
             onConfirm={() => bookmarks.remove(record._id)}
           >
             <Button size="small" icon={<DeleteOutlined />} />
@@ -141,6 +145,21 @@ export default function Bookmarks() {
         onCreate={bookmarks.add}
         record={record}
       />
+      <EditBookmarks
+        visible={bulkEdit}
+        selectedIds={selectedIds}
+        onCancel={() => {
+          setSelectedIds([]);
+          setBulkEdit(false);
+        }}
+        onUpdate={(ids, data) =>
+          bookmarks.bulkUpdate(ids, data).then((response) => {
+            setSelectedIds([]);
+            setBulkEdit(false);
+            return response;
+          })
+        }
+      />
       <Row style={{ marginBottom: 20 }} wrap={false}>
         <Col flex="auto">
           <Input
@@ -154,26 +173,57 @@ export default function Bookmarks() {
           />
         </Col>
         <Col flex="none" style={{ paddingLeft: 20 }}>
-          <Button size="large" type="primary" onClick={() => setRecord({ type: 'site', tags: [] })}>
+          <Button
+            icon={<PlusOutlined />}
+            size="large"
+            type="primary"
+            onClick={() => setRecord({ type: 'site', tags: [] })}
+          >
             Add Bookmark
           </Button>
         </Col>
       </Row>
-      <div style={{ marginBottom: 20 }}>
-        <Space wrap>
-          <Text>Filter By:</Text>
-          {bookmarks.data.tags.map((item) => (
-            <Button
-              key={item}
-              size="small"
-              onClick={() => setSearch(item)}
-              type={search === item ? 'primary' : 'dashed'}
-            >
-              #{item}
+      {bookmarks.data?.tags?.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <Space wrap>
+            <Text>Filter By:</Text>
+            {bookmarks.data.tags.map((item) => (
+              <Button
+                key={item}
+                size="small"
+                onClick={() => setSearch(item)}
+                type={search === item ? 'primary' : 'dashed'}
+              >
+                #{item}
+              </Button>
+            ))}
+          </Space>
+        </div>
+      )}
+      {selectedIds.length > 1 && (
+        <Space style={{ marginBottom: 20 }}>
+          <Button
+            size="middle"
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={() => setBulkEdit(true)}
+          >
+            Edit {selectedIds.length} Items
+          </Button>
+          <Popconfirm
+            okText="Yes"
+            cancelText="No"
+            destroyTooltipOnHide
+            okButtonProps={{ danger: true }}
+            title="Are you sure you want to delete the selected bookmarks? "
+            onConfirm={() => bookmarks.bulkRemove(selectedIds)}
+          >
+            <Button size="middle" type="primary" danger icon={<DeleteOutlined />}>
+              Delete {selectedIds.length} Items
             </Button>
-          ))}
+          </Popconfirm>
         </Space>
-      </div>
+      )}
       <Table
         loading={loading}
         columns={columns}
@@ -185,6 +235,10 @@ export default function Bookmarks() {
           showSizeChanger: false,
           total: bookmarks.data.total,
           pageSize: bookmarks.data.limit,
+        }}
+        rowSelection={{
+          onChange: setSelectedIds,
+          selectedRowKeys: selectedIds,
         }}
         size="small"
         scroll={{ x: 1 }}

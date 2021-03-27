@@ -33,6 +33,18 @@ export default function reducer(state, action) {
         ...state,
         docs: state.docs.map((doc) => (doc._id === action.payload._id ? action.payload : doc)),
       };
+    case 'bulkRemove':
+      return {
+        ...state,
+        docs: state.docs.filter((doc) => !action.payload.ids.includes(doc._id)),
+      };
+    case 'bulkUpdate':
+      return {
+        ...state,
+        docs: state.docs.map((doc) =>
+          action.payload.ids.includes(doc._id) ? Object.assign({}, doc, action.payload.data) : doc
+        ),
+      };
 
     default:
       throw new Error(`${action.type} not found!`);

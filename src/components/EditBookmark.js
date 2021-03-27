@@ -68,7 +68,7 @@ export default function EditBookmark(props) {
           <Checkbox>Favorite (Show First)</Checkbox>
         </Form.Item>
         <Form.Item name="tags" label="Tags">
-          <Tags value={props.record?.tags} />
+          <Tags />
         </Form.Item>
         <Form.Item name="notes" label="Notes">
           <Input.TextArea placeholder="Please don't write your password!" />

@@ -79,8 +79,28 @@ function useProvideBookmark() {
       });
   };
 
+  const bulkRemove = (ids) => {
+    return api
+      .post('/bookmarks/bulk/delete', { ids })
+      .then(() => dispatch({ type: 'bulkRemove', payload: { ids } }))
+      .catch((response) => {
+        message.error(response.message);
+      });
+  };
+
+  const bulkUpdate = (ids, data) => {
+    return api
+      .post('/bookmarks/bulk/update', { ids, data })
+      .then(() => dispatch({ type: 'bulkUpdate', payload: { ids, data } }))
+      .catch((response) => {
+        message.error(response.message);
+      });
+  };
+
   return {
     data: state,
+    bulkRemove,
+    bulkUpdate,
     getTags,
     drop,
     add,
