@@ -1,25 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import {
-  Table,
-  Tag,
-  Space,
-  Input,
-  Row,
-  Col,
-  Button,
-  Popconfirm,
-  Modal,
-  Typography,
-  message,
-} from 'antd';
-import {
-  SearchOutlined,
-  CopyOutlined,
-  DeleteOutlined,
-  QrcodeOutlined,
-  EditOutlined,
-  PlusOutlined,
-} from '@ant-design/icons';
+import { Table, Space, Input, Row, Col, Button, Popconfirm, Modal, Typography, message } from 'antd';
+import { SearchOutlined, CopyOutlined, DeleteOutlined, QrcodeOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useBookmarks } from '../providers/ProvideBookmark';
 import { debounce } from '../helper';
@@ -27,6 +8,9 @@ import EditBookmark from '../components/EditBookmark';
 import EditBookmarks from '../components/EditBookmarks';
 import RecordName from '../components/RecordName';
 import RecordFavorite from '../components/RecordFavorite';
+
+import CustomTag from '../components/CustomTag';
+
 import QRCode from 'qrcode.react';
 
 const { Text } = Typography;
@@ -64,87 +48,71 @@ export default function Bookmarks() {
     bookmarks.getTags();
   }, []);
 
-  const columns = useMemo(() => [
-    {
-      title: '',
-      width: 40,
-      align: 'center',
-      dataIndex: 'favorite',
-      key: 'favorite',
-      render: (_, record) => (
-        <RecordFavorite record={record} onClick={(data) => bookmarks.update(record._id, data)} />
-      ),
-    },
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      render: (_, record) => <RecordName record={record} />,
-    },
-    {
-      title: 'Notes',
-      dataIndex: 'notes',
-      key: 'notes',
-    },
-    {
-      title: 'Tags',
-      key: 'tags',
-      dataIndex: 'tags',
-      render: (list) =>
-        list?.map((item) => (
-          <Tag color="geekblue" key={item} onClick={() => setSearch(item)}>
-            {item}
-          </Tag>
-        )),
-    },
-    {
-      title: '',
-      key: 'action',
-      align: 'right',
-      render: (_, record) => (
-        <Space>
-          {!!record.url && (
-            <>
-              <CopyToClipboard text={record.url} onCopy={() => message.success('Copied.')}>
-                <Button size="small" icon={<CopyOutlined />} />
-              </CopyToClipboard>
-              <Button
-                size="small"
-                icon={<QrcodeOutlined />}
-                onClick={() =>
-                  Modal.info({
-                    icon: null,
-                    width: 350,
-                    content: <QRCode size="142" value={record.url} />,
-                  })
-                }
-              />
-            </>
-          )}
-          <Button size="small" onClick={() => setRecord(record)} icon={<EditOutlined />} />
-          <Popconfirm
-            okText="Yes"
-            cancelText="No"
-            destroyTooltipOnHide
-            okButtonProps={{ danger: true }}
-            title="Are you sure you want to delete this bookmark?"
-            onConfirm={() => bookmarks.remove(record._id)}
-          >
-            <Button size="small" icon={<DeleteOutlined />} />
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ]);
+  const columns = useMemo(
+    () => [
+      {
+        title: '',
+        width: 40,
+        align: 'center',
+        dataIndex: 'favorite',
+        key: 'favorite',
+        render: (_, record) => <RecordFavorite record={record} onClick={(data) => bookmarks.update(record._id, data)} />,
+      },
+      {
+        title: 'Name',
+        dataIndex: 'name',
+        key: 'name',
+        render: (_, record) => <RecordName record={record} />,
+      },
+      {
+        title: 'Notes',
+        dataIndex: 'notes',
+        key: 'notes',
+      },
+      {
+        title: 'Tags',
+        key: 'tags',
+        dataIndex: 'tags',
+        render: (list) => list?.map((item) => <CustomTag key={item} label={item} onClick={() => setSearch(item)} isActive={search === item} />),
+      },
+      {
+        title: '',
+        key: 'action',
+        align: 'right',
+        render: (_, record) => (
+          <Space>
+            {!!record.url && (
+              <>
+                <CopyToClipboard text={record.url} onCopy={() => message.success('Copied.')}>
+                  <Button size='small' icon={<CopyOutlined />} />
+                </CopyToClipboard>
+                <Button
+                  size='small'
+                  icon={<QrcodeOutlined />}
+                  onClick={() =>
+                    Modal.info({
+                      icon: null,
+                      width: 350,
+                      content: <QRCode value={record.url} />,
+                    })
+                  }
+                />
+              </>
+            )}
+            <Button size='small' onClick={() => setRecord(record)} icon={<EditOutlined />} />
+            <Popconfirm okText='Yes' cancelText='No' destroyTooltipOnHide okButtonProps={{ danger: true }} title='Are you sure you want to delete this bookmark?' onConfirm={() => bookmarks.remove(record._id)}>
+              <Button size='small' icon={<DeleteOutlined />} />
+            </Popconfirm>
+          </Space>
+        ),
+      },
+    ],
+    []
+  );
 
   return (
     <div>
-      <EditBookmark
-        onCancel={() => setRecord(null)}
-        onUpdate={bookmarks.update}
-        onCreate={bookmarks.add}
-        record={record}
-      />
+      <EditBookmark onCancel={() => setRecord(null)} onUpdate={bookmarks.update} onCreate={bookmarks.add} record={record} />
       <EditBookmarks
         visible={bulkEdit}
         selectedIds={selectedIds}
@@ -161,64 +129,30 @@ export default function Bookmarks() {
         }
       />
       <Row style={{ marginBottom: 20 }} wrap={false}>
-        <Col flex="auto">
-          <Input
-            bordered
-            allowClear
-            size="large"
-            value={search}
-            placeholder="Type name, tag, link..."
-            prefix={<SearchOutlined />}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        <Col flex='auto'>
+          <Input bordered allowClear size='large' value={search} placeholder='Type name, tag, link...' prefix={<SearchOutlined />} onChange={(e) => setSearch(e.target.value)} />
         </Col>
-        <Col flex="none" style={{ paddingLeft: 20 }}>
-          <Button
-            icon={<PlusOutlined />}
-            size="large"
-            type="primary"
-            onClick={() => setRecord({ type: 'site', tags: [] })}
-          >
+        <Col flex='none' style={{ paddingLeft: 20 }}>
+          <Button icon={<PlusOutlined />} size='large' type='primary' onClick={() => setRecord({ type: 'site', tags: [] })}>
             Add Bookmark
           </Button>
         </Col>
       </Row>
       {bookmarks.data?.tags?.length > 0 && (
         <div style={{ marginBottom: 20 }}>
-          <Space wrap>
-            <Text>Filter By:</Text>
-            {bookmarks.data.tags.map((item) => (
-              <Button
-                key={item}
-                size="small"
-                onClick={() => setSearch(item)}
-                type={search === item ? 'primary' : 'dashed'}
-              >
-                #{item}
-              </Button>
-            ))}
-          </Space>
+          <Text>Filter By: </Text>
+          {bookmarks.data.tags.map((item) => (
+            <CustomTag key={item} label={item} onClick={() => setSearch(item)} isActive={search === item} />
+          ))}
         </div>
       )}
       {selectedIds.length > 1 && (
         <Space style={{ marginBottom: 20 }}>
-          <Button
-            size="middle"
-            type="primary"
-            icon={<EditOutlined />}
-            onClick={() => setBulkEdit(true)}
-          >
+          <Button size='middle' type='primary' icon={<EditOutlined />} onClick={() => setBulkEdit(true)}>
             Edit {selectedIds.length} Items
           </Button>
-          <Popconfirm
-            okText="Yes"
-            cancelText="No"
-            destroyTooltipOnHide
-            okButtonProps={{ danger: true }}
-            title="Are you sure you want to delete the selected bookmarks? "
-            onConfirm={() => bookmarks.bulkRemove(selectedIds)}
-          >
-            <Button size="middle" type="primary" danger icon={<DeleteOutlined />}>
+          <Popconfirm okText='Yes' cancelText='No' destroyTooltipOnHide okButtonProps={{ danger: true }} title='Are you sure you want to delete the selected bookmarks? ' onConfirm={() => bookmarks.bulkRemove(selectedIds)}>
+            <Button size='middle' type='primary' danger icon={<DeleteOutlined />}>
               Delete {selectedIds.length} Items
             </Button>
           </Popconfirm>
@@ -229,7 +163,7 @@ export default function Bookmarks() {
         columns={columns}
         dataSource={bookmarks.data.docs}
         onChange={({ current }) => setPage(current)}
-        rowKey="_id"
+        rowKey='_id'
         pagination={{
           current: page,
           showSizeChanger: false,
@@ -240,7 +174,7 @@ export default function Bookmarks() {
           onChange: setSelectedIds,
           selectedRowKeys: selectedIds,
         }}
-        size="small"
+        size='small'
         scroll={{ x: 1 }}
         style={{ whiteSpace: 'nowrap' }}
       />

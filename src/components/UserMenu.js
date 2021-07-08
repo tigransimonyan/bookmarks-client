@@ -16,10 +16,10 @@ function App() {
           <Menu>
             <Menu.Item>
               <Upload
-                name="bookmarks"
+                name='bookmarks'
                 multiple={false}
                 showUploadList={false}
-                accept="application/html, text/html"
+                accept='application/html, text/html'
                 action={api.defaults.baseURL.concat('/bookmarks/import')}
                 headers={{
                   authorization: api.defaults.headers.common['Authorization'],
@@ -60,9 +60,9 @@ function App() {
           </Menu>
         }
       >
-        <a style={{ color: '#fff' }} onClick={(e) => e.preventDefault()}>
+        <span style={{ color: '#fff' }} onClick={(e) => e.preventDefault()}>
           {auth.user?.email} <DownOutlined />
-        </a>
+        </span>
       </Dropdown>
     )
   );

@@ -14,11 +14,11 @@ export default function Home() {
         Sign In to Save Your Bookmarks!
       </Title>
       <div style={{ overflow: 'hidden', maxWidth: 500 }}>
-        <Tabs type="card">
-          <TabPane tab="Sign In" key="1">
+        <Tabs type='card'>
+          <TabPane tab='Sign In' key='1'>
             <SignIn onFinish={(data) => auth.signin(data)} />
           </TabPane>
-          <TabPane tab="Sign Up" key="2">
+          <TabPane tab='Sign Up' key='2'>
             <SignUp onFinish={(data) => auth.signup(data)} />
           </TabPane>
         </Tabs>
