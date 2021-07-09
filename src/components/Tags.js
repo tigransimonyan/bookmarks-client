@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Tag, Input } from 'antd';
+import CustomTag from '../components/CustomTag';
 import { PlusOutlined } from '@ant-design/icons';
 
 export default function EditableTagGroup(props) {
@@ -27,27 +28,11 @@ export default function EditableTagGroup(props) {
   return (
     <>
       {tags.map((tag) => (
-        <Tag key={tag} closable onClose={() => setTags(tags.filter((item) => item !== tag))}>
-          {tag}
-        </Tag>
+        <CustomTag key={tag} label={tag} onClose={() => setTags(tags.filter((item) => item !== tag))} />
       ))}
-      {inputVisible && (
-        <Input
-          ref={input}
-          type="text"
-          size="small"
-          style={{ width: '78px', marginRight: '8px', verticalaAign: 'top' }}
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onBlur={handleInputConfirm}
-          onPressEnter={handleInputConfirm}
-        />
-      )}
+      {inputVisible && <Input ref={input} type='text' size='small' style={{ width: '78px', marginRight: '8px', verticalaAign: 'top' }} value={inputValue} onChange={(e) => setInputValue(e.target.value)} onBlur={handleInputConfirm} onPressEnter={handleInputConfirm} />}
       {!inputVisible && (
-        <Tag
-          style={{ background: '#fff', borderStyle: 'dashed' }}
-          onClick={() => setInputVisible(true)}
-        >
+        <Tag style={{ background: '#fff', borderStyle: 'dashed' }} onClick={() => setInputVisible(true)}>
           <PlusOutlined /> New Tag
         </Tag>
       )}

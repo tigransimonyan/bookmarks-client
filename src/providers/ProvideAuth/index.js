@@ -33,7 +33,7 @@ function useProvideAuth() {
       api.defaults.headers.common['Authorization'] = undefined;
       setUser(null);
     }
-  }, []);
+  }, [cookies.user]);
 
   const signin = (data) => {
     return api
