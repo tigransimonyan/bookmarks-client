@@ -1,9 +1,9 @@
-import { useRef } from 'react';
-import { Menu, Dropdown, Upload, Modal, message } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
-import { useAuth } from '../providers/ProvideAuth';
-import { useBookmarks } from '../providers/ProvideBookmark';
-import api from '../api';
+import { useRef } from "react";
+import { Menu, Dropdown, Upload, Modal, message } from "antd";
+import { DownOutlined } from "@ant-design/icons";
+import { useAuth } from "../providers/ProvideAuth";
+import { useBookmarks } from "../providers/ProvideBookmark";
+import api from "../api";
 
 function App() {
   const auth = useAuth();
@@ -16,25 +16,25 @@ function App() {
           <Menu>
             <Menu.Item>
               <Upload
-                name='bookmarks'
+                name="bookmarks"
                 multiple={false}
                 showUploadList={false}
-                accept='application/html, text/html'
-                action={api.defaults.baseURL.concat('/bookmarks/import')}
+                accept="application/html, text/html"
+                action={api.defaults.baseURL.concat("/bookmarks/import")}
                 headers={{
-                  authorization: api.defaults.headers.common['Authorization'],
+                  authorization: api.defaults.headers.common["Authorization"],
                 }}
                 onChange={(res) => {
-                  if (res.file.status === 'done') {
-                    message.success('Your bookmarks imported successfully!');
+                  if (res.file.status === "done") {
+                    message.success("Your bookmarks imported successfully!");
                     bookmarks.list();
                     that.current.uploading = false;
-                  } else if (res.file.status === 'error') {
-                    message.error('Your bookmarks import failed!');
+                  } else if (res.file.status === "error") {
+                    message.error("Your bookmarks import failed!");
                     that.current.uploading = false;
-                  } else if (res.file.status === 'uploading') {
+                  } else if (res.file.status === "uploading") {
                     if (!that.current.uploading) {
-                      message.info('Please wait!');
+                      message.info("Please wait!");
                     }
                     that.current.uploading = true;
                   }
@@ -46,11 +46,11 @@ function App() {
             <Menu.Item
               onClick={() =>
                 Modal.confirm({
-                  title: 'Are you sure to want to delete your bookmarks?',
+                  title: "Are you sure to want to delete your bookmarks?",
                   okButtonProps: { danger: true },
                   onOk: bookmarks.drop,
-                  okText: 'Yes',
-                  cancelText: 'No',
+                  okText: "Yes",
+                  cancelText: "No",
                 })
               }
             >
@@ -60,7 +60,10 @@ function App() {
           </Menu>
         }
       >
-        <span style={{ color: '#fff' }} onClick={(e) => e.preventDefault()}>
+        <span
+          style={{ color: "#fff", cursor: "pointer" }}
+          onClick={(e) => e.preventDefault()}
+        >
           {auth.user?.email} <DownOutlined />
         </span>
       </Dropdown>
