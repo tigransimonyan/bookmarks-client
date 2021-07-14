@@ -127,7 +127,9 @@ export default function Bookmarks() {
                     Modal.info({
                       icon: null,
                       width: 310,
-                      content: <QRCode size="120" value={record.url} />,
+                      content: (
+                        <QRCode size="240" renderAs="svg" value={record.url} />
+                      ),
                     })
                   }
                 />
