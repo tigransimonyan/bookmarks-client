@@ -24,9 +24,11 @@ function App() {
       </Layout.Header>
       <Layout.Content style={{ padding: "50px 5%" }}>
         {auth.user ? <Bookmarks /> : <Home />}
-        <a target="_blank" href="https://www.patreon.com/bePatron?u=41176574">
-          <img width={127} src={patreon} />
-        </a>
+        <div style={{ paddingTop: 20 }}>
+          <a target="_blank" href="https://www.patreon.com/bePatron?u=41176574">
+            <img width={127} src={patreon} />
+          </a>
+        </div>
       </Layout.Content>
     </Layout>
   );

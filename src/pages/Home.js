@@ -13,7 +13,7 @@ export default function Home() {
       <Title level={2} style={{ marginBottom: 25 }}>
         Sign In to Save Your Bookmarks!
       </Title>
-      <div style={{ overflow: "hidden", maxWidth: 500, paddingBottom: 20 }}>
+      <div style={{ overflow: "hidden", maxWidth: 500 }}>
         <Tabs type="card">
           <TabPane tab="Sign In" key="1">
             <SignIn onFinish={(data) => auth.signin(data)} />
